@@ -40,18 +40,16 @@ public class Order {
         pay.setQuantity(this.getQuantity());
         pay.setStatus(this.getStatus());
         
-        // mappings goes here
         // feignclient 호출
         OrderApplication.applicationContext.getBean(PayService.class).pay(pay);
     }
 
-    @PrePersist
-    public void onPrePersist(){
+    @PreRemove
+    public void onPreRemove(){
         OrderCancelled orderCancelled = new OrderCancelled();
         BeanUtils.copyProperties(this, orderCancelled);
+        // kafka에 push
         orderCancelled.publishAfterCommit();
-
-
     }
 
 

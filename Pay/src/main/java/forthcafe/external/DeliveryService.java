@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.util.Date;
 
 // feignclient는 인터페이스 기술로 사용 가능
-// url: 호출하고싶은 서비스 주소
-@FeignClient(name="Delivery", url="${api.url.delivery}") // http://localhost:8083 - application.yaml에 정의
+// url: 호출하고싶은 서비스 주소. http://localhost:8083 - application.yaml에 정의
+@FeignClient(name="Delivery", url="${api.url.delivery}") 
 public interface DeliveryService {
 
     // command
     @RequestMapping(method= RequestMethod.POST, path="/deliveries", consumes = "application/json")
-    public void deliveryCancel(@RequestBody Delivery delivery);
+    // delivery 서비스의 deliveryCancelCotroller를 호출
+    // delivery를 호출함 문제 있음
+    public void deliveryCancel(@RequestBody DeliveryCancel deliveryCancel);
 
 }

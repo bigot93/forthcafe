@@ -2,11 +2,13 @@ package forthcafe;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
 
 @Entity
 @Table(name="Delivery_table")
-public class Delivery {
+public class DeliveryCancel {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -25,8 +27,13 @@ public class Delivery {
         // BeanUtils.copyProperties(this, deliveried);
         // deliveried.publishAfterCommit();
 
-        System.out.println("############## Delivery ##############");
-
+        System.out.println("############## DeliveryCancel ##############");
+        System.out.println("############## DeliveryCancel ##############");
+        System.out.println("############## DeliveryCancel ##############");
+        System.out.println("############## DeliveryCancel ##############");
+        System.out.println("############## DeliveryCancel ##############");
+        System.out.println("############## DeliveryCancel ##############");
+        
         DeliveryCancelled deliveryCancelled = new DeliveryCancelled();
         BeanUtils.copyProperties(this, deliveryCancelled);
         deliveryCancelled.publishAfterCommit();
