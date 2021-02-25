@@ -25,25 +25,21 @@ public class Order {
 
     @PostPersist
     public void onPostPersist(){
-        Ordered ordered = new Ordered();
+            Ordered ordered = new Ordered();
         BeanUtils.copyProperties(this, ordered);
-        ordered.publishAfterCommit();
+        ordered.setStatus("Order");
+        // kafka push
+        ordered.publish();
 
         //Following code causes dependency to external APIs
         // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
         Pay pay = new Pay();
-        pay.setId(this.getId());
-        pay.setOrdererName(this.getOrdererName());
-        pay.setMenuName(this.getMenuName());
-        pay.setMenuId(this.getMenuId());
-        pay.setPrice(this.getPrice());
-        pay.setQuantity(this.getQuantity());
-        pay.setStatus(this.getStatus());
+        BeanUtils.copyProperties(this, pay);
         
         // feignclient 호출
         OrderApplication.applicationContext.getBean(PayService.class).pay(pay);
     }
-
+    
     @PreRemove
     public void onPreRemove(){
         OrderCancelled orderCancelled = new OrderCancelled();
@@ -105,8 +101,4 @@ public class Order {
     public void setMenuId(Long menuId) {
         this.menuId = menuId;
     }
-
-
-
-
 }

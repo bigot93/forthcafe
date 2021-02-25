@@ -3,7 +3,7 @@ package forthcafe;
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
 
-import forthcafe.external.DeliveryCancel;
+import forthcafe.external.Delivery;
 import forthcafe.external.DeliveryService;
 
 import java.util.List;
@@ -24,10 +24,11 @@ public class Pay {
     private String status;
 
 
-    @PrePersist
-    public void onPrePersist(){
+    @PostPersist
+    public void onPostPersist(){
         Payed payed = new Payed();
         BeanUtils.copyProperties(this, payed);
+        payed.setStatus("Pay");
         payed.publishAfterCommit();
 
         // delay test시 주석해제
@@ -50,6 +51,27 @@ public class Pay {
         // PayApplication.applicationContext.getBean(DeliveryService.class).deliveryCancel(delivery);
 
 
+    }
+
+    @PostUpdate
+    public void onPostUpdate() {
+            
+        PayCancelled payCancelled = new PayCancelled();
+        BeanUtils.copyProperties(this, payCancelled);
+        // payCancelled.setId(orderCancelled.getId());
+        // payCancelled.setMenuId(orderCancelled.getMenuId());
+        // payCancelled.setMenuName(orderCancelled.getMenuName());
+        // payCancelled.setOrdererName(orderCancelled.getOrdererName());
+        // payCancelled.setPrice(orderCancelled.getPrice());
+        // payCancelled.setQuantity(orderCancelled.getQuantity());
+        payCancelled.setStatus("payCancelled");
+        payCancelled.publish();
+
+        // req/res 패턴 처리 
+        Delivery delivery = new Delivery();
+        BeanUtils.copyProperties(payCancelled, delivery);
+        // feignclient 호출
+        PayApplication.applicationContext.getBean(DeliveryService.class).delivery(delivery);        
     }
 
 

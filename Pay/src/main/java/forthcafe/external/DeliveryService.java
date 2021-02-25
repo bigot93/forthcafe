@@ -14,9 +14,8 @@ import java.util.Date;
 public interface DeliveryService {
 
     // command
-    @RequestMapping(method= RequestMethod.POST, path="/deliveries", consumes = "application/json")
-    // delivery 서비스의 deliveryCancelCotroller를 호출
-    // delivery를 호출함 문제 있음
-    public void deliveryCancel(@RequestBody DeliveryCancel deliveryCancel);
+    @RequestMapping(method = RequestMethod.POST, path = "/deliveries", consumes = "application/json")
+    // delivery 서비스의 deliveryCotroller를 호출
+    public void delivery(@RequestBody Delivery delivery);
 
 }

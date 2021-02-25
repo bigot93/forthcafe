@@ -1,6 +1,6 @@
 package forthcafe.external;
 
-public class DeliveryCancel {
+public class Delivery {
 
     private Long id;
     private String ordererName;

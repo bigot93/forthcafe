@@ -21,14 +21,24 @@ public class Delivery {
 
     @PrePersist
     public void onPrePersist(){
+        System.out.println("############## Delivery onPrePersist ##############");
+
+        Deliveried deliveried = new Deliveried();
+        BeanUtils.copyProperties(this, deliveried);
+        deliveried.publishAfterCommit();
+    }
+
+        @PostUpdate
+    public void onPostUpdate(){
         // Deliveried deliveried = new Deliveried();
         // BeanUtils.copyProperties(this, deliveried);
         // deliveried.publishAfterCommit();
 
-        System.out.println("############## Delivery ##############");
-
+        System.out.println("############## DeliveryCancel onPostUpdate ##############");
+        
         DeliveryCancelled deliveryCancelled = new DeliveryCancelled();
         BeanUtils.copyProperties(this, deliveryCancelled);
+        deliveryCancelled.setStatus("deliveryCancelled");
         deliveryCancelled.publishAfterCommit();
     }
 
