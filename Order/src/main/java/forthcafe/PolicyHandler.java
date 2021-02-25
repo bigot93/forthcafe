@@ -19,28 +19,28 @@ public class PolicyHandler{
     public void wheneverDeliveried_(@Payload Deliveried deliveried){
 
         if(deliveried.isMe()){
-            System.out.println("##### listener  : " + deliveried.toJson());
+            System.out.println("##### deliveried listener  : " + deliveried.toJson());
         }
     }
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverPayed_(@Payload Payed payed){
 
         if(payed.isMe()){
-            System.out.println("##### listener  : " + payed.toJson());
+            System.out.println("##### payed listener  : " + payed.toJson());
         }
     }
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverPayCancelled_(@Payload PayCancelled payCancelled){
 
         if(payCancelled.isMe()){
-            System.out.println("##### listener  : " + payCancelled.toJson());
+            System.out.println("##### payCancelled listener  : " + payCancelled.toJson());
         }
     }
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverDeliveryCancelled_(@Payload DeliveryCancelled deliveryCancelled){
 
         if(deliveryCancelled.isMe()){
-            System.out.println("##### listener  : " + deliveryCancelled.toJson());
+            System.out.println("##### deliveryCancelled listener  : " + deliveryCancelled.toJson());
         }
     }
 
