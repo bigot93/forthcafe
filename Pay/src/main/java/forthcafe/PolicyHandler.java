@@ -25,27 +25,31 @@ public class PolicyHandler{
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverOrderCancelled_(@Payload OrderCancelled orderCancelled){
 
-        if(orderCancelled.isMe()){
-            System.out.println("##### OrderCancelled listener  : " + orderCancelled.toJson());
-
-            // view 객체 조회
-            Optional<Pay> Optional = payRepository.findById(orderCancelled.getId());
-
-            if( Optional.isPresent()) {
-                Pay pay = Optional.get();
-
-                // 객체에 이벤트의 eventDirectValue 를 set 함
-                pay.setId(orderCancelled.getId());
-                pay.setMenuId(orderCancelled.getMenuId());
-                pay.setMenuName(orderCancelled.getMenuName());
-                pay.setOrdererName(orderCancelled.getOrdererName());
-                pay.setPrice(orderCancelled.getPrice());
-                pay.setQuantity(orderCancelled.getQuantity());
-                pay.setStatus("payCancelled");
-
-                // 레파지 토리에 save
-                payRepository.save(pay);
+        try {
+            if(orderCancelled.isMe()){
+                System.out.println("##### OrderCancelled listener  : " + orderCancelled.toJson());
+    
+                // 객체 조회
+                Optional<Pay> Optional = payRepository.findById(orderCancelled.getId());
+    
+                if( Optional.isPresent()) {
+                    Pay pay = Optional.get();
+    
+                    // 객체에 이벤트의 eventDirectValue 를 set 함
+                    pay.setId(orderCancelled.getId());
+                    pay.setMenuId(orderCancelled.getMenuId());
+                    pay.setMenuName(orderCancelled.getMenuName());
+                    pay.setOrdererName(orderCancelled.getOrdererName());
+                    pay.setPrice(orderCancelled.getPrice());
+                    pay.setQuantity(orderCancelled.getQuantity());
+                    pay.setStatus("payCancelled");
+    
+                    // 레파지 토리에 save
+                    payRepository.save(pay);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
