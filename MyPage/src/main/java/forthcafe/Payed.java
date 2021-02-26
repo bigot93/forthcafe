@@ -2,7 +2,7 @@ package forthcafe;
 
 public class Payed extends AbstractEvent {
 
-        private Long id;
+    private Long id;
     private String ordererName;
     private String menuName;
     private Long menuId;

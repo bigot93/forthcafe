@@ -3,6 +3,7 @@ package forthcafe;
 import forthcafe.config.kafka.KafkaProcessor;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -21,17 +22,28 @@ public class PolicyHandler{
     }
 
     // OrderCancelled 이벤트 처리기(kafka)
-    // TODO
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverOrderCancelled_(@Payload OrderCancelled orderCancelled){
 
         if(orderCancelled.isMe()){
             System.out.println("##### OrderCancelled listener  : " + orderCancelled.toJson());
 
-            List<Pay> list = payRepository.findByMenuId(orderCancelled.getMenuId());
-            
-            for(Pay pay : list){
-            	pay.setStatus("payCancelled");
+            // view 객체 조회
+            Optional<Pay> Optional = payRepository.findById(orderCancelled.getId());
+
+            if( Optional.isPresent()) {
+                Pay pay = Optional.get();
+
+                // 객체에 이벤트의 eventDirectValue 를 set 함
+                pay.setId(orderCancelled.getId());
+                pay.setMenuId(orderCancelled.getMenuId());
+                pay.setMenuName(orderCancelled.getMenuName());
+                pay.setOrdererName(orderCancelled.getOrdererName());
+                pay.setPrice(orderCancelled.getPrice());
+                pay.setQuantity(orderCancelled.getQuantity());
+                pay.setStatus("payCancelled");
+
+                // 레파지 토리에 save
                 payRepository.save(pay);
             }
         }
