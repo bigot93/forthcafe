@@ -1,0 +1,46 @@
+
+////////// req/res 
+http localhost:8081/orders
+http localhost:8082/pays
+http localhost:8083/deliveries
+http localhost:8084/myPages
+
+http localhost:8081/orders ordererName="kim" menuName="americano" menuId=1  price=100 quantity=3 status="Order"
+http localhost:8081/orders ordererName="lee" menuName="latte" menuId=2  price=200 quantity=5 status="Order"
+http localhost:8081/orders ordererName="park" menuName="greentee" menuId=3  price=150 quantity=2 status="Order"
+
+// 부하 테스트
+siege -c2 -t10S  -v --content-type "application/json" 'http://localhost:8081/orders POST {"memuId":2, "quantity":1}'
+
+
+//////// github
+project root에서 수행
+git init
+git add .
+git commit -m "first commit"
+git remote add origin https://github.com/bigot93/forthcafe.git
+git branch -M main //// 브랜치 변경
+git push -u origin main
+bigot93/!~~~~~~~0
+git push origin +main  //// 위에걸로 오류나면 강제 커밋
+rm -rf .git   /// git 삭제
+
+
+////////////// kafka
+/usr/local/kafka/bin/kafka-topics.sh --bootstrap-server http://localhost:9092 --topic forthcafe --create --partitions 1 --replication-factor 1
+/usr/local/kafka/bin/kafka-topics.sh --bootstrap-server http://localhost:9092 --list         //////////// 토픽리스트 확인
+/usr/local/kafka/bin/kafka-console-producer.sh --broker-list http://localhost:9092 --topic forthcafe        //////// 메시지 생성자
+/usr/local/kafka/bin/kafka-console-consumer.sh --bootstrap-server http://localhost:9092 --topic forthcafe --from-beginning    ////////// 메시지 리스너
+
+////////// 상품추가
+http localhost:8081/orders ordererName="kim" menuName="americano" menuId=1  price=100 quantity=3 status="Order"
+http localhost:8081/orders ordererName="lee" menuName="latte" menuId=2  price=200 quantity=5 status="Order"
+http localhost:8081/orders ordererName="park" menuName="greentee" menuId=3  price=150 quantity=2 status="Order"
+
+///////// 상태조회
+http localhost:8081/orders
+http localhost:8082/pays
+http localhost:8083/deliveries
+
+/////// 2번주문 삭제
+http DELETE http://localhost:8081/orders/2

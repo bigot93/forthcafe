@@ -21,6 +21,7 @@ public class PolicyHandler{
     }
 
     // OrderCancelled 이벤트 처리기(kafka)
+    // TODO
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverOrderCancelled_(@Payload OrderCancelled orderCancelled){
 

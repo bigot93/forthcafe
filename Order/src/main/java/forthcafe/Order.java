@@ -25,7 +25,7 @@ public class Order {
 
     @PostPersist
     public void onPostPersist(){
-            Ordered ordered = new Ordered();
+        Ordered ordered = new Ordered();
         BeanUtils.copyProperties(this, ordered);
         ordered.setStatus("Order");
         // kafka push

@@ -1,5 +1,5 @@
-package fourthcafe;
-import fourthcafe.config.kafka.KafkaProcessor;
+package forthcafe;
+import forthcafe.config.kafka.KafkaProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
