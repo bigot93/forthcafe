@@ -47,3 +47,10 @@ http localhost:8084/myPages
 
 /////// 2번주문 삭제
 http DELETE http://localhost:8081/orders/2
+
+
+//////// config map 설정
+kubectl create configmap apiurl --from-literal=sysmode=PRODUCT -n tutorial     ////// namespace는 확인 필요
+
+
+
