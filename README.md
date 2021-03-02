@@ -24,4 +24,26 @@
 # Event Storming 결과
 
 ![EventStormingV1](https://github.com/bigot93/forthcafe/blob/main/images/eventingstorming_forthcafe.png)
-![image](https://user-images.githubusercontent.com/57469176/109598051-d4f50580-7b5b-11eb-9c6c-5091e7120d4e.png)
+
+# 헥사고날 아키텍처 다이어그램 도출
+--추가필요
+
+# 구현
+분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 8084, 8088 이다)
+```
+cd Order
+mvn spring-boot:run  
+
+cd Paay
+mvn spring-boot:run
+
+cd Delivery
+mvn spring-boot:run 
+
+cd MyPage
+mvn spring-boot:run  
+
+cd gateway
+mvn spring-boot:run 
+
+
