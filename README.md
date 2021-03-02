@@ -62,9 +62,6 @@ import org.springframework.beans.BeanUtils;
 import forthcafe.external.Pay;
 import forthcafe.external.PayService;
 
-
-  
-// aggregate = JPA entity, Value Object
 @Entity
 @Table(name="Order_table")
 public class Order {
@@ -84,15 +81,12 @@ public class Order {
         Ordered ordered = new Ordered();
         BeanUtils.copyProperties(this, ordered);
         ordered.setStatus("Order");
-        // kafka push
+        
         ordered.publish();
 
-        //Following code causes dependency to external APIs
-        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
         Pay pay = new Pay();
         BeanUtils.copyProperties(this, pay);
         
-        // feignclient 호출
         OrderApplication.applicationContext.getBean(PayService.class).pay(pay);
     }
     
@@ -100,7 +94,7 @@ public class Order {
     public void onPreRemove(){
         OrderCancelled orderCancelled = new OrderCancelled();
         BeanUtils.copyProperties(this, orderCancelled);
-        // kafka에 push
+
         orderCancelled.publishAfterCommit();
     }
 
@@ -185,7 +179,6 @@ public class PolicyHandler{
 
     }
 
-    // OrderCancelled 이벤트 처리기(kafka)
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverOrderCancelled_(@Payload OrderCancelled orderCancelled){
 
@@ -193,7 +186,6 @@ public class PolicyHandler{
             if(orderCancelled.isMe()){
                 System.out.println("##### OrderCancelled listener  : " + orderCancelled.toJson());
     
-                // 객체 조회
                 Optional<Pay> Optional = payRepository.findById(orderCancelled.getId());
     
                 if( Optional.isPresent()) {
@@ -207,8 +199,7 @@ public class PolicyHandler{
                     pay.setPrice(orderCancelled.getPrice());
                     pay.setQuantity(orderCancelled.getQuantity());
                     pay.setStatus("payCancelled");
-    
-                    // 레파지 토리에 save
+
                     payRepository.save(pay);
                 }
             }
