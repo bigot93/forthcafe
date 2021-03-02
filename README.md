@@ -224,7 +224,7 @@ DDD 적용 후 REST API의 테스트를 통하여 정상적으로 동작하는 �
 
 - 원격 주문 (Order 주문 후 결과)
 
-증빙1(https://github.com/bigot93/forthcafe/blob/main/images/order.png)
+![증빙2](https://github.com/bigot93/forthcafe/blob/main/images/order.png)
 
 # GateWay 적용
 API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다. 다음과 같이 GateWay를 적용하였다.
@@ -309,11 +309,13 @@ server:
 # CQRS
 Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다. 본 프로젝트에서 View 역할은 MyPages 서비스가 수행한다.
 
-주문(ordered) 실행 후 MyPages 화면 증빙2
+주문(ordered) 실행 후 MyPages 화면
+
+![증빙3](https://github.com/bigot93/forthcafe/blob/main/images/order_pages.png)
 
 주문(OrderCancelled) 취소 후 MyPages 화면
 
-증빙3
+![증빙4](https://github.com/bigot93/forthcafe/blob/main/images/cancel_pages.png)
 
 위와 같이 주문을 하게되면 Order > Pay > Delivery > MyPage로 주문이 Assigend 되고
 
@@ -323,22 +325,22 @@ Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원�
 
 위 결과로 서로 다른 마이크로 서비스 간에 트랜잭션이 묶여 있음을 알 수 있다.
 
-폴리글랏
+# 폴리글랏
 Order 서비스의 DB와 MyPage의 DB를 다른 DB를 사용하여 폴리글랏을 만족시키고 있다.
 
-Order의 pom.xml DB 설정 코드
+**Order의 pom.xml DB 설정 코드**
 
-증빙5
+![증빙5](https://github.com/bigot93/forthcafe/blob/main/images/db_conf1.png)
 
-MyPage의 pom.xml DB 설정 코드
+**MyPage의 pom.xml DB 설정 코드**
 
-증빙4
+![증빙6](https://github.com/bigot93/forthcafe/blob/main/images/db_conf2.png)
 
 동기식 호출 과 Fallback 처리
 분석단계에서의 조건 중 하나로 주문(SirenOrder)->결제(pay) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다.
 
-Order 서비스 내 external.PayService
-
+**Order 서비스 내 external.PayService**
+```java
 package forthcafe.external;
 
 import org.springframework.cloud.openfeign.FeignClient; 
@@ -348,18 +350,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Date;
 
-// feignclient는 인터페이스 기술로 사용 
-// url: 호출하고싶은 서비스 주소. http://localhost:8082 - application.yaml에 정의
-// fallback = fallback class 지정. ~service interface 를 implementation 해야 함
-@FeignClient(name = "Pay", url = "${api.url.pay}", fallback = PayServiceImpl.class) // 
+@FeignClient(name = "Pay", url = "${api.url.pay}", fallback = PayServiceImpl.class)
 public interface PayService {
 
-    // command
     @RequestMapping(method = RequestMethod.POST, path = "/pays", consumes = "application/json")
     public void pay(@RequestBody Pay pay);
 
 }
-동작 확인
+```
+
+**동작 확인**
 
 잠시 Payment 서비스 중시
 증빙6
