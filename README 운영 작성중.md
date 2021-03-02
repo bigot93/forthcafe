@@ -35,7 +35,7 @@ mvn package
 
 * Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성
 ```
-cd .. 
+cd ..
 cd Order
 az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
 kubectl create deploy order --image=skteam01.azurecr.io/order:v1
@@ -59,7 +59,7 @@ cd ..
 cd gateway
 az acr build --registry skteam01 --image skteam01.azurecr.io/gateway:v1 .
 kubectl create deploy gateway --image=skteam01.azurecr.io/gateway:v1
-kubectl expose deploy gateway --type=ClusterIP --port=8080
+kubectl expose deploy gateway --type=LoadBalancer --port=8080
 
 cd .. 
 cd MyPage
@@ -67,6 +67,8 @@ az acr build --registry skteam01 --image skteam01.azurecr.io/mypage:v1 .
 kubectl create deploy mypage --image=skteam01.azurecr.io/mypage:v1
 kubectl expose deploy mypage --type=ClusterIP --port=8080
 
+
+kubectl logs {pod명}
 ```
 ![image](https://user-images.githubusercontent.com/5147735/109618535-fe715980-7b7a-11eb-8adc-dcb07c9a46c3.png)
 
@@ -78,6 +80,11 @@ cd Order
 az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
 kubectl apply -f kubernetes/deployment.yml 
 
+
+cd .. 
+cd Pay
+az acr build --registry skteam01 --image skteam01.azurecr.io/pay:v1 .
+kubectl apply -f kubernetes/deployment.yml 
 ```
 
 * deployment.yml 
@@ -90,6 +97,7 @@ kubectl apply -f kubernetes/deployment.yml
 ```
 
 ## [deployment.yml  사진 첨부]
+![image](https://user-images.githubusercontent.com/5147735/109643506-a8f77580-7b97-11eb-926b-e6c922aa2d1b.png)
 
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
@@ -130,7 +138,7 @@ hystrix:
 
 * 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 100명 60초 동안 실시
 ```
-kubectl exec -it pod/siege -c siege -n forthcafe -- /bin/bash
+kubectl exec -it pod/siege -c siege -- /bin/bash
 siege -c100 -t60S  -v --content-type "application/json" 'http://localhost:8081/orders POST {"memuId":2, "quantity":1}'
 ```
 
@@ -155,7 +163,8 @@ siege -c100 -t60S  -v --content-type "application/json" 'http://localhost:8081/o
 * 다시 expose 해준다.
 
 ```
-kubectl expose deploy delivery --type=ClusterIP --port=8080 -n forthcafe
+kubectl expose deploy delivery --type=ClusterIP --port=8080
+kubectl expose deploy order --type=ClusterIP --port=8080
 ```
 
 * Delivery서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다
@@ -187,8 +196,11 @@ kubectl get deploy delivery -w
 ## ConfigMap
 * application.yml 파일에 ${configurl} 설정
 ```
-
+kubectl create configmap apiurl --from-literal=sysmode=PRODUCT
+kubectl get configmap apiurl -o yaml
 ```
+![image](https://user-images.githubusercontent.com/5147735/109642889-dbed3980-7b96-11eb-99c9-af9d8b38cd22.png)
+
 
 
 ## Self-healing (Liveness Probe)
