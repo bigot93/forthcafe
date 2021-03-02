@@ -82,7 +82,7 @@ kubectl apply -f kubernetes/deployment.yml
 
 * deployment.yml 
 ```
-1. namespace, image 설정
+1. image 설정
 2. env 설정 (config Map) 
 3. readiness 설정 (무정지 배포)
 4. liveness 설정 (self-healing)
