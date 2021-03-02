@@ -22,3 +22,5 @@
    1. 고객이 주문상태를 주문내역조회에서 확인할 수 있어야 한다 → CQRS
 
 # Event Storming 결과
+
+![EventStormingV1](https://github.com/minksong69/winterone/blob/main/eventingstorming_forthcafe.png)
