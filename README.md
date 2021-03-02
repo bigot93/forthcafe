@@ -23,5 +23,5 @@
 
 # Event Storming 결과
 
-![EventStormingV1](https://github.com/minksong69/winterone/blob/main/eventingstorming_forthcafe.png)
+![EventStormingV1](https://github.com/bigot93/forthcafe/blob/main/images/eventingstorming_forthcafe.png)
 ![image](https://user-images.githubusercontent.com/57469176/109598051-d4f50580-7b5b-11eb-9c6c-5091e7120d4e.png)
