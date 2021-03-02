@@ -53,4 +53,3 @@ http DELETE http://localhost:8081/orders/2
 kubectl create configmap apiurl --from-literal=sysmode=PRODUCT -n tutorial     ////// namespace는 확인 필요
 
 
-
