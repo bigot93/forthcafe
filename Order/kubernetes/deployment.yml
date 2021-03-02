@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: order
-          image: skteam01.azurecr.io/Order:latest
+          image: skteam01.azurecr.io/order:v1
           ports:
             - containerPort: 8080
           ### config map start
