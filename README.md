@@ -351,11 +351,14 @@ public interface PayService {
 
 **동작 확인**
 
-잠시 Payment 서비스 중지
-증빙6
+잠시 Delivery 서비스 중지
+![증빙7](https://github.com/bigot93/forthcafe/blob/main/images/%EB%8F%99%EA%B8%B0%ED%99%941.png)
 
-주문 요청시 에러 발생
-증빙7
+주문 취소 요청시 Pay 서비스 변화 없음
+![증빙8](https://github.com/bigot93/forthcafe/blob/main/images/%EB%8F%99%EA%B8%B0%ED%99%942.png)
 
-Payment 서비스 재기동 후 정상동작 확인
-증빙8 증빙9
+Delivery 서비스 재기동 후 주문취소
+![증빙9](https://github.com/bigot93/forthcafe/blob/main/images/%EB%8F%99%EA%B8%B0%ED%99%943.png)
+
+Pay 서비스 상태를 보면 2번 주문 정상 취소 처리됨
+![증빙9](https://github.com/bigot93/forthcafe/blob/main/images/%EB%8F%99%EA%B8%B0%ED%99%944.png)
