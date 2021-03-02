@@ -48,7 +48,7 @@ az aks get-credentials --resource-group skteam01-rsrcgrp --name skteam01-aks
 kubectl get all  해서 조회 하기 
  
 [Azure 컨테이너 레지스트리 로그인]
-az acre login --name skteam01
+az acr login --name skteam01
  
 Azure 클러스터(AKS)에 레지스트리(ACR) 붙이기
 az aks update -n skteam01-aks -g skteam01-rsrcgrp --attach-acr skteam01
