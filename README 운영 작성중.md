@@ -2,17 +2,6 @@
 
 ## CI/CD
 
-* 폴더만들기
-```
-mkdir forthcafe
-cd forthcafe
-```
-
-* 네임스페이스 만들기
-```
-kubectl create ns forthcafe
-kubectl get ns
-```
 
 * 소스 가져오기
 ```
@@ -23,15 +12,15 @@ git clone https://github.com/bigot93/forthcafe.git
 ```
 cd /forthcafe
 
-cd order
+cd Order
 mvn package 
 
 cd ..
-cd pay
+cd Pay
 mvn package
 
 cd ..
-cd delivery
+cd Delivery
 mvn package
 
 cd ..
@@ -47,35 +36,35 @@ mvn package
 * Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성
 ```
 cd .. 
-cd order
-az acr build --registry #skcc24 --image #skcc24.azurecr.io/order:v1 .
-kubectl create deploy order --image=#skcc24.azurecr.io/order:v1 -n forthcafe
+cd Order
+az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
+kubectl create deploy order --image=skteam01.azurecr.io/order:v1 -n forthcafe
 kubectl expose deploy order --type=ClusterIP --port=8080 -n forthcafe
 
 cd .. 
-cd pay
-az acr build --registry #skcc24 --image #skcc24.azurecr.io/pay:v1 .
-kubectl create deploy pay --image=#skcc24.azurecr.io/pay:v1 -n forthcafe
+cd Pay
+az acr build --registry skteam01 --image skteam01.azurecr.io/pay:v1 .
+kubectl create deploy pay --image=skteam01.azurecr.io/pay:v1 -n forthcafe
 kubectl expose deploy pay --type=ClusterIP --port=8080 -n forthcafe
 
 
 cd .. 
-cd delivery
-az acr build --registry #skcc24 --image #skcc24.azurecr.io/delivery:v1 .
-kubectl create deploy delivery --image=#skcc24.azurecr.io/delivery:v1 -n forthcafe
+cd Delivery
+az acr build --registry skteam01 --image skteam01.azurecr.io/delivery:v1 .
+kubectl create deploy delivery --image=skteam01.azurecr.io/delivery:v1 -n forthcafe
 kubectl expose deploy delivery --type=ClusterIP --port=8080 -n forthcafe
 
 
 cd .. 
 cd gateway
-az acr build --registry #skcc24 --image #skcc24.azurecr.io/gateway:v1 .
-kubectl create deploy gateway --image=#skcc24.azurecr.io/gateway:v1 -n forthcafe
+az acr build --registry skteam01 --image skteam01.azurecr.io/gateway:v1 .
+kubectl create deploy gateway --image=skteam01.azurecr.io/gateway:v1 -n forthcafe
 kubectl expose deploy gateway --type=ClusterIP --port=8080 -n forthcafe
 
 cd .. 
-cd mypage
-az acr build --registry #skcc24 --image #skcc24.azurecr.io/mypage:v1 .
-kubectl create deploy mypage --image=#skcc24.azurecr.io/mypage:v1 -n forthcafe
+cd MyPage
+az acr build --registry skteam01 --image skteam01.azurecr.io/mypage:v1 .
+kubectl create deploy mypage --image=skteam01.azurecr.io/mypage:v1 -n forthcafe
 kubectl expose deploy mypage --type=ClusterIP --port=8080 -n forthcafe
 
 ```
@@ -84,7 +73,7 @@ kubectl expose deploy mypage --type=ClusterIP --port=8080 -n forthcafe
 ```
 cd .. 
 cd order
-az acr build --registry #skcc24 --image #skcc24.azurecr.io/order:v1 .
+az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
 kubectl apply -f kubernetes/deployment.yml 
 
 ```
