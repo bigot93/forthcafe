@@ -258,3 +258,18 @@ kubectl get configmap apiurl -o yaml
 
 ## Self-healing (Liveness Probe)
 
+
+## 테스트 스크립트
+* 상품추가
+http {EXTERNAL-IP}:8080/orders ordererName="kim" menuName="americano" menuId=1  price=100 quantity=3 status="Order"
+http {EXTERNAL-IP}:8080/orders ordererName="lee" menuName="latte" menuId=2  price=200 quantity=5 status="Order"
+http {EXTERNAL-IP}:8080/orders ordererName="park" menuName="greentee" menuId=3  price=150 quantity=2 status="Order"
+
+* 상태조회
+http {EXTERNAL-IP}:8080/orders
+http {EXTERNAL-IP}:8080/pays
+http {EXTERNAL-IP}:8080/deliveries
+http {EXTERNAL-IP}:8080/myPages
+
+* 2번주문 삭제
+http DELETE http://{EXTERNAL-IP}:8080/orders/2
