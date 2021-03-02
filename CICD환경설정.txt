@@ -10,13 +10,13 @@ CI/CD교재 31 page ~ 참고
  
 리소스 그룹 검색 
 •	리소스 그룹 만들기 
-•	리소스 그룹명 : #skcc24-rsrcgrp   
+•	리소스 그룹명 : skteam01-rsrcgrp   
 •	영역 : 한국 중부 
  
 kubernetes  서비스 검색 
 쿠버네티스 클러스터 추가 
-•	리소스그룹 : #skcc24-rsrcgrp 선택 
-•	클러스터 이름 : #skcc24-aks
+•	리소스그룹 : skteam01-rsrcgrp 선택 
+•	클러스터 이름 : skteam01-aks
 •	지역 : 한국 중부
 •	버전은 기본 
 •	노드 크기 : 
@@ -25,16 +25,16 @@ kubernetes  서비스 검색
  
 컨테이너 레지스트리 검색 
 만들기 
-•	리소스그룹 : #skcc24-rsrcgrp 선택
-•	레지스트리 이름 : #skcc24  
+•	리소스그룹 : skteam01-rsrcgrp 선택
+•	레지스트리 이름 : skteam01  
 •	위치 : 한국 중부 
-*이미지 샘플 : skcc24.azurecr.io/order:v1
+*이미지 샘플 : skteam01.azurecr.io/order:v1
 [만들기]
  
 [복붙을 위한 이름들]
-리소스그룹 : #skcc24-rsrcgrp
-쿠버네티스 (클러스터/aks) : #skcc24-aks
-레지스트리 (acr) : #skcc24 
+리소스그룹 : skteam01-rsrcgrp
+쿠버네티스 (클러스터/aks) : skteam01-aks
+레지스트리 (acr) : skteam01
  
  
 [터미널에서 설정]
@@ -43,15 +43,15 @@ az login 후 나오는 url 클릭하여 code 입력 하기
 로그인 계정 클릭 
  
 [클러스터 토큰 가져오기] * #skcc24 부분은 본인 것으로 변경 하기 
-az aks get-credentials --resource-group #skcc24-rsrcgrp --name #skcc24-aks
+az aks get-credentials --resource-group skteam01-rsrcgrp --name skteam01-aks
  
 kubectl get all  해서 조회 하기 
  
 [Azure 컨테이너 레지스트리 로그인]
-az acre login --name #skcc24
+az acr login --name skteam01
  
 Azure 클러스터(AKS)에 레지스트리(ACR) 붙이기
-az aks update -n #skcc24-aks -g #skcc24-rsrcgrp --attach-acr #skcc24
+az aks update -n skteam01-aks -g skteam01-rsrcgrp --attach-acr skteam01
 
 
 [yaml파일 만들기]
