@@ -46,4 +46,318 @@ mvn spring-boot:run
 cd gateway
 mvn spring-boot:run 
 
+DDD 의 적용
+msaez.io 를 통해 구현한 Aggregate 단위로 Entity 를 선언 후, 구현을 진행하였다.
 
+Entity Pattern 과 Repository Pattern 을 적용하기 위해 Spring Data REST 의 RestRepository 를 적용하였다.
+
+Order 서비스의 Order.java
+
+package forthcafe;
+
+import javax.persistence.*;
+import org.springframework.beans.BeanUtils;
+
+import forthcafe.external.Pay;
+import forthcafe.external.PayService;
+
+
+  
+// aggregate = JPA entity, Value Object
+@Entity
+@Table(name="Order_table")
+public class Order {
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
+    private String ordererName;
+    private String menuName;
+    private Long menuId;
+    private Double price;
+    private Integer quantity;
+    private String status;
+
+    @PostPersist
+    public void onPostPersist(){
+        Ordered ordered = new Ordered();
+        BeanUtils.copyProperties(this, ordered);
+        ordered.setStatus("Order");
+        // kafka push
+        ordered.publish();
+
+        //Following code causes dependency to external APIs
+        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
+        Pay pay = new Pay();
+        BeanUtils.copyProperties(this, pay);
+        
+        // feignclient 호출
+        OrderApplication.applicationContext.getBean(PayService.class).pay(pay);
+    }
+    
+    @PreRemove
+    public void onPreRemove(){
+        OrderCancelled orderCancelled = new OrderCancelled();
+        BeanUtils.copyProperties(this, orderCancelled);
+        // kafka에 push
+        orderCancelled.publishAfterCommit();
+    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getOrdererName() {
+        return ordererName;
+    }
+
+    public void setOrdererName(String ordererName) {
+        this.ordererName = ordererName;
+    }
+
+    public String getMenuName() {
+        return menuName;
+    }
+
+    public void setMenuName(String menuName) {
+        this.menuName = menuName;
+    }
+
+    public Long getMenuId() {
+        return menuId;
+    }
+
+    public void setMenuId(Long menuId) {
+        this.menuId = menuId;
+    }
+}
+Pay 서비스의 PolicyHandler.java
+
+package forthcafe;
+
+import forthcafe.config.kafka.KafkaProcessor;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Service;
+
+@Service
+public class PolicyHandler{
+
+    @Autowired
+    PayRepository payRepository;
+
+    @StreamListener(KafkaProcessor.INPUT)
+    public void onStringEventListener(@Payload String eventString){
+
+    }
+
+    // OrderCancelled 이벤트 처리기(kafka)
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverOrderCancelled_(@Payload OrderCancelled orderCancelled){
+
+        try {
+            if(orderCancelled.isMe()){
+                System.out.println("##### OrderCancelled listener  : " + orderCancelled.toJson());
+    
+                // 객체 조회
+                Optional<Pay> Optional = payRepository.findById(orderCancelled.getId());
+    
+                if( Optional.isPresent()) {
+                    Pay pay = Optional.get();
+    
+                    // 객체에 이벤트의 eventDirectValue 를 set 함
+                    pay.setId(orderCancelled.getId());
+                    pay.setMenuId(orderCancelled.getMenuId());
+                    pay.setMenuName(orderCancelled.getMenuName());
+                    pay.setOrdererName(orderCancelled.getOrdererName());
+                    pay.setPrice(orderCancelled.getPrice());
+                    pay.setQuantity(orderCancelled.getQuantity());
+                    pay.setStatus("payCancelled");
+    
+                    // 레파지 토리에 save
+                    payRepository.save(pay);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+DDD 적용 후 REST API의 테스트를 통하여 정상적으로 동작하는 것을 확인할 수 있었다.
+
+원격 주문 (Order 주문 후 결과)
+
+증빙1
+
+GateWay 적용
+API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다. 다음과 같이 GateWay를 적용하였다.
+
+server:
+  port: 8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: Order
+          uri: http://localhost:8081
+          predicates:
+            - Path=/orders/** 
+        - id: Pay
+          uri: http://localhost:8082
+          predicates:
+            - Path=/pays/** 
+        - id: Delivery
+          uri: http://localhost:8083
+          predicates:
+            - Path=/deliveries/** 
+        - id: MyPage
+          uri: http://localhost:8084
+          predicates:
+            - Path= /myPages/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: Order
+          uri: http://Order:8080
+          predicates:
+            - Path=/orders/** 
+        - id: Pay
+          uri: http://Pay:8080
+          predicates:
+            - Path=/pays/** 
+        - id: Delivery
+          uri: http://Delivery:8080
+          predicates:
+            - Path=/deliveries/** 
+        - id: MyPage
+          uri: http://MyPage:8080
+          predicates:
+            - Path= /myPages/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080
+CQRS
+Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다. 본 프로젝트에서 View 역할은 MyPages 서비스가 수행한다.
+
+주문(ordered) 실행 후 MyPages 화면 증빙2
+
+주문(OrderCancelled) 취소 후 MyPages 화면
+
+증빙3
+
+위와 같이 주문을 하게되면 Order > Pay > Delivery > MyPage로 주문이 Assigend 되고
+
+주문 취소가 되면 Status가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
+
+또한 Correlation을 key를 활용하여 Id를 Key값을 하고 원하는 주문하고 서비스간의 공유가 이루어 졌다.
+
+위 결과로 서로 다른 마이크로 서비스 간에 트랜잭션이 묶여 있음을 알 수 있다.
+
+폴리글랏
+Order 서비스의 DB와 MyPage의 DB를 다른 DB를 사용하여 폴리글랏을 만족시키고 있다.
+
+Order의 pom.xml DB 설정 코드
+
+증빙5
+
+MyPage의 pom.xml DB 설정 코드
+
+증빙4
+
+동기식 호출 과 Fallback 처리
+분석단계에서의 조건 중 하나로 주문(SirenOrder)->결제(pay) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다.
+
+Order 서비스 내 external.PayService
+
+package forthcafe.external;
+
+import org.springframework.cloud.openfeign.FeignClient; 
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.util.Date;
+
+// feignclient는 인터페이스 기술로 사용 
+// url: 호출하고싶은 서비스 주소. http://localhost:8082 - application.yaml에 정의
+// fallback = fallback class 지정. ~service interface 를 implementation 해야 함
+@FeignClient(name = "Pay", url = "${api.url.pay}", fallback = PayServiceImpl.class) // 
+public interface PayService {
+
+    // command
+    @RequestMapping(method = RequestMethod.POST, path = "/pays", consumes = "application/json")
+    public void pay(@RequestBody Pay pay);
+
+}
+동작 확인
+
+잠시 Payment 서비스 중시
+증빙6
+
+주문 요청시 에러 발생
+증빙7
+
+Payment 서비스 재기동 후 정상동작 확인
+증빙8 증빙9
