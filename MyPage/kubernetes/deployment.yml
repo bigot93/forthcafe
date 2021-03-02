@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: MyPage
+  name: mypage
   labels:
-    app: MyPage
+    app: mypage
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: MyPage
+      app: mypage
   template:
     metadata:
       labels:
-        app: MyPage
+        app: mypage
     spec:
       containers:
-        - name: MyPage
-          image: username/MyPage:latest
+        - name: mypage
+          image: skteam01.azurecr.io/MyPage:latest
           ports:
             - containerPort: 8080
           readinessProbe:
