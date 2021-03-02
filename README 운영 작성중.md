@@ -3,6 +3,39 @@
 ## CI/CD
 
 
+'''
+# 헬름 설치
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+
+# Azure Only
+kubectl patch storageclass managed -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+# 카프카 설치
+kubectl --namespace kube-system create sa tiller      # helm 의 설치관리자를 위한 시스템 사용자 생성
+kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+
+helm repo add incubator https://charts.helm.sh/incubator
+helm repo update
+kubectl create ns kafka
+helm install my-kafka --namespace kafka incubator/kafka
+
+kubectl get po -n kafka -o wide
+'''
+
+# Topic 생성
+kubectl -n kafka exec my-kafka-0 -- /usr/bin/kafka-topics --zookeeper my-kafka-zookeeper:2181 --topic forthcafe --create --partitions 1 --replication-factor 1
+
+# Topic 확인
+kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-producer --broker-list my-kafka:9092 --topic forthcafe
+
+# 이벤트 발행하기
+kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-producer --broker-list my-kafka:9092 --topic forthcafe
+
+# 이벤트 수신하기
+kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-consumer --bootstrap-server my-kafka:9092 --topic forthcafe --from-beginning
+
 * 소스 가져오기
 ```
 git clone https://github.com/bigot93/forthcafe.git
@@ -84,6 +117,19 @@ kubectl apply -f kubernetes/deployment.yml
 cd .. 
 cd Pay
 az acr build --registry skteam01 --image skteam01.azurecr.io/pay:v1 .
+kubectl apply -f kubernetes/deployment.yml 
+
+
+cd .. 
+cd Delivery
+az acr build --registry skteam01 --image skteam01.azurecr.io/delivery:v1 .
+kubectl apply -f kubernetes/deployment.yml 
+
+
+
+cd .. 
+cd MyPage
+az acr build --registry skteam01 --image skteam01.azurecr.io/mypage:v1 .
 kubectl apply -f kubernetes/deployment.yml 
 ```
 
