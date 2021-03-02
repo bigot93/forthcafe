@@ -45,14 +45,15 @@ mvn spring-boot:run
 
 cd gateway
 mvn spring-boot:run 
+```
 
-DDD 의 적용
+## DDD 의 적용
 msaez.io 를 통해 구현한 Aggregate 단위로 Entity 를 선언 후, 구현을 진행하였다.
 
 Entity Pattern 과 Repository Pattern 을 적용하기 위해 Spring Data REST 의 RestRepository 를 적용하였다.
 
-Order 서비스의 Order.java
-
+**Order 서비스의 Order.java**
+```java 
 package forthcafe;
 
 import javax.persistence.*;
@@ -157,8 +158,10 @@ public class Order {
         this.menuId = menuId;
     }
 }
-Pay 서비스의 PolicyHandler.java
+```
 
+**Pay 서비스의 PolicyHandler.java**
+```java
 package forthcafe;
 
 import forthcafe.config.kafka.KafkaProcessor;
@@ -215,15 +218,18 @@ public class PolicyHandler{
     }
 
 }
+```
+
 DDD 적용 후 REST API의 테스트를 통하여 정상적으로 동작하는 것을 확인할 수 있었다.
 
-원격 주문 (Order 주문 후 결과)
+- 원격 주문 (Order 주문 후 결과)
 
-증빙1
+증빙1(https://github.com/bigot93/forthcafe/blob/main/images/order.png)
 
-GateWay 적용
+# GateWay 적용
 API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다. 다음과 같이 GateWay를 적용하였다.
 
+```yaml
 server:
   port: 8088
 
@@ -298,7 +304,9 @@ spring:
 
 server:
   port: 8080
-CQRS
+```
+
+# CQRS
 Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다. 본 프로젝트에서 View 역할은 MyPages 서비스가 수행한다.
 
 주문(ordered) 실행 후 MyPages 화면 증빙2
