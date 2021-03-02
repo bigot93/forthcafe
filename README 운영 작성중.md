@@ -74,7 +74,7 @@ kubectl expose deploy mypage --type=ClusterIP --port=8080
 * yml파일 이용한 deploy
 ```
 cd .. 
-cd order
+cd Order
 az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
 kubectl apply -f kubernetes/deployment.yml 
 
