@@ -1,0 +1,68 @@
+CI/CD 클라우드 환경 설정하기
+
+CI/CD교재 31 page ~ 참고 
+[azure portal 설정]  
+#skcc24는 본인 계정으로 변경 하기  
+팀 계정 : skteam01로 변경 
+
+포탈 로그인 
+구독 클릭 해서 구독정보 확인 하기 
+ 
+리소스 그룹 검색 
+•	리소스 그룹 만들기 
+•	리소스 그룹명 : #skcc24-rsrcgrp   
+•	영역 : 한국 중부 
+ 
+kubernetes  서비스 검색 
+쿠버네티스 클러스터 추가 
+•	리소스그룹 : #skcc24-rsrcgrp 선택 
+•	클러스터 이름 : #skcc24-aks
+•	지역 : 한국 중부
+•	버전은 기본 
+•	노드 크기 : 
+•	노드 개수 :  4 
+[만들기] 클릭 
+ 
+컨테이너 레지스트리 검색 
+만들기 
+•	리소스그룹 : #skcc24-rsrcgrp 선택
+•	레지스트리 이름 : #skcc24  
+•	위치 : 한국 중부 
+*이미지 샘플 : skcc24.azurecr.io/order:v1
+[만들기]
+ 
+[복붙을 위한 이름들]
+리소스그룹 : #skcc24-rsrcgrp
+쿠버네티스 (클러스터/aks) : #skcc24-aks
+레지스트리 (acr) : #skcc24 
+ 
+ 
+[터미널에서 설정]
+[azure 로그인 하기]
+az login 후 나오는 url 클릭하여 code 입력 하기 
+로그인 계정 클릭 
+ 
+[클러스터 토큰 가져오기] * #skcc24 부분은 본인 것으로 변경 하기 
+az aks get-credentials --resource-group #skcc24-rsrcgrp --name #skcc24-aks
+ 
+kubectl get all  해서 조회 하기 
+ 
+[Azure 컨테이너 레지스트리 로그인]
+az acre login --name #skcc24
+ 
+Azure 클러스터(AKS)에 레지스트리(ACR) 붙이기
+az aks update -n #skcc24-aks -g #skcc24-rsrcgrp --attach-acr #skcc24
+
+
+[yaml파일 만들기]
+container orchestration 교재 77page 참고 
+각 서비스별로 만들어 주기 
+forthcafe/Order/kubernetes/deployment.yml
+forthcafe/Order/kubernetes/service.yaml
+ 
+forthcafe/Pay/kubernetes/deployment.yml
+forthcafe/Pay/kubernetes/service.yaml
+ 
+forthcafe/Delivery/kubernetes/deployment.yml
+forthcafe/Delivery/kubernetes/service.yaml
+ 
