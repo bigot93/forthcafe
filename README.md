@@ -1,5 +1,4 @@
 # forthcafe
-# winterone
 # 서비스 시나리오
 ### 기능적 요구사항
 1. 고객이 메뉴를 주문한다.
@@ -29,7 +28,7 @@
 --추가필요
 
 # 구현
-분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 8084, 8088 이다)
+분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각각의 포트넘버는 8081 ~ 8084, 8088 이다)
 ```
 cd Order
 mvn spring-boot:run  
@@ -50,7 +49,7 @@ mvn spring-boot:run
 ## DDD 의 적용
 msaez.io 를 통해 구현한 Aggregate 단위로 Entity 를 선언 후, 구현을 진행하였다.
 
-Entity Pattern 과 Repository Pattern 을 적용하기 위해 Spring Data REST 의 RestRepository 를 적용하였다.
+Entity Pattern과 Repository Pattern을 적용하기 위해 Spring Data REST의 RestRepository를 적용하였다.
 
 **Order 서비스의 Order.java**
 ```java 
@@ -308,11 +307,11 @@ Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원�
 
 ![증빙4](https://github.com/bigot93/forthcafe/blob/main/images/cancel_pages.png)
 
-위와 같이 주문을 하게되면 Order > Pay > Delivery > MyPage로 주문이 Assigend 되고
+위와 같이 주문을 하게되면 Order > Pay > Delivery > MyPage로 주문이 Assigned 되고
 
 주문 취소가 되면 Status가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
 
-또한 Correlation을 key를 활용하여 Id를 Key값을 하고 원하는 주문하고 서비스간의 공유가 이루어 졌다.
+또한 Correlation을 Key를 활용하여 Id를 Key값을 하고 원하는 주문하고 서비스간의 공유가 이루어 졌다.
 
 위 결과로 서로 다른 마이크로 서비스 간에 트랜잭션이 묶여 있음을 알 수 있다.
 
@@ -328,7 +327,7 @@ Order 서비스의 DB와 MyPage의 DB를 다른 DB를 사용하여 폴리글랏�
 ![증빙6](https://github.com/bigot93/forthcafe/blob/main/images/db_conf2.png)
 
 동기식 호출 과 Fallback 처리
-분석단계에서의 조건 중 하나로 주문(SirenOrder)->결제(pay) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다.
+분석단계에서의 조건 중 하나로 주문(Order)->결제(Pay) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 Rest Repository에 의해 노출되어있는 REST 서비스를 FeignClient를 이용하여 호출하도록 한다.
 
 **Order 서비스 내 external.PayService**
 ```java
@@ -352,7 +351,7 @@ public interface PayService {
 
 **동작 확인**
 
-잠시 Payment 서비스 중시
+잠시 Payment 서비스 중지
 증빙6
 
 주문 요청시 에러 발생
