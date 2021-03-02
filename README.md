@@ -34,7 +34,7 @@
 cd Order
 mvn spring-boot:run  
 
-cd Paay
+cd Pay
 mvn spring-boot:run
 
 cd Delivery
