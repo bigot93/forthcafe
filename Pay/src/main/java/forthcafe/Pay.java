@@ -55,15 +55,9 @@ public class Pay {
 
     @PostUpdate
     public void onPostUpdate() {
-            
+        // kafka publish
         PayCancelled payCancelled = new PayCancelled();
         BeanUtils.copyProperties(this, payCancelled);
-        // payCancelled.setId(orderCancelled.getId());
-        // payCancelled.setMenuId(orderCancelled.getMenuId());
-        // payCancelled.setMenuName(orderCancelled.getMenuName());
-        // payCancelled.setOrdererName(orderCancelled.getOrdererName());
-        // payCancelled.setPrice(orderCancelled.getPrice());
-        // payCancelled.setQuantity(orderCancelled.getQuantity());
         payCancelled.setStatus("payCancelled");
         payCancelled.publish();
 
@@ -71,7 +65,7 @@ public class Pay {
         Delivery delivery = new Delivery();
         BeanUtils.copyProperties(payCancelled, delivery);
         // feignclient 호출
-        PayApplication.applicationContext.getBean(DeliveryService.class).delivery(delivery);        
+        PayApplication.applicationContext.getBean(DeliveryService.class).delivery(delivery);
     }
 
 

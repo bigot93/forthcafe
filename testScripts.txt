@@ -24,7 +24,7 @@ git remote add origin https://github.com/bigot93/forthcafe.git
 git branch -M main //// 브랜치 변경
 git push -u origin main
 bigot93/!~~~~~~~0 (github id / github pw)
-git push origin +main  //// 위에걸로 오류나면 강제 커밋
+git push origin +main  //// 위에걸로 오류나면 강제 커밋(!!!!!!!!!!!!!!사용 주의)
 rm -rf .git   /// git 삭제
 
 
