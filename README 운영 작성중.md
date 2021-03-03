@@ -70,10 +70,37 @@ mvn package
 cd ..
 cd MyPage
 mvn package
-
 ```
 
-* Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성(방법1)
+* Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성(방법1 : yml파일 이용한 deploy)
+```
+cd .. 
+cd Order
+az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
+kubectl apply -f kubernetes/deployment.yml 
+kubectl expose deploy order --type=ClusterIP --port=8080
+
+cd .. 
+cd Pay
+az acr build --registry skteam01 --image skteam01.azurecr.io/pay:v1 .
+kubectl apply -f kubernetes/deployment.yml 
+kubectl expose deploy pay --type=ClusterIP --port=8080
+
+cd .. 
+cd Delivery
+az acr build --registry skteam01 --image skteam01.azurecr.io/delivery:v1 .
+kubectl apply -f kubernetes/deployment.yml 
+kubectl expose deploy delivery --type=ClusterIP --port=8080
+
+
+cd .. 
+cd MyPage
+az acr build --registry skteam01 --image skteam01.azurecr.io/mypage:v1 .
+kubectl apply -f kubernetes/deployment.yml 
+kubectl expose deploy mypage --type=ClusterIP --port=8080
+```
+
+* Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성(방법2)
 ```
 cd ..
 cd Order
@@ -113,33 +140,7 @@ kubectl logs {pod명}
 ![image](https://user-images.githubusercontent.com/5147735/109618535-fe715980-7b7a-11eb-8adc-dcb07c9a46c3.png)
 
 
-* Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성(방법2 : yml파일 이용한 deploy)
-```
-cd .. 
-cd Order
-az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
-kubectl apply -f kubernetes/deployment.yml 
-kubectl expose deploy order --type=ClusterIP --port=8080
 
-cd .. 
-cd Pay
-az acr build --registry skteam01 --image skteam01.azurecr.io/pay:v1 .
-kubectl apply -f kubernetes/deployment.yml 
-kubectl expose deploy pay --type=ClusterIP --port=8080
-
-cd .. 
-cd Delivery
-az acr build --registry skteam01 --image skteam01.azurecr.io/delivery:v1 .
-kubectl apply -f kubernetes/deployment.yml 
-kubectl expose deploy delivery --type=ClusterIP --port=8080
-
-
-cd .. 
-cd MyPage
-az acr build --registry skteam01 --image skteam01.azurecr.io/mypage:v1 .
-kubectl apply -f kubernetes/deployment.yml 
-kubectl expose deploy mypage --type=ClusterIP --port=8080
-```
 
 * deployment.yml 
 ```
