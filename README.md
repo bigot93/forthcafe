@@ -378,7 +378,7 @@ Fallback 결과
 
 ## CI/CD
 
-
+http://msaschool.io/operation/implementation/implementation-seven/
 * 헬름 설치
 ```
 curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
