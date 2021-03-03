@@ -366,6 +366,13 @@ Delivery 서비스 재기동 후 주문취소
 Pay 서비스 상태를 보면 2번 주문 정상 취소 처리됨
 ![증빙9](https://github.com/bigot93/forthcafe/blob/main/images/%EB%8F%99%EA%B8%B0%ED%99%944.png)
 
+Fallback 설정
+![image](https://user-images.githubusercontent.com/5147735/109755775-f9b7ae80-7c29-11eb-8add-bdb295dc94e1.png)
+![image](https://user-images.githubusercontent.com/5147735/109755797-04724380-7c2a-11eb-8fcd-1c5135000ee5.png)
+
+
+Fallback 결과
+![image](https://user-images.githubusercontent.com/5147735/109755716-dab91c80-7c29-11eb-9099-ba585115a2a6.png)
 
 # 운영
 
