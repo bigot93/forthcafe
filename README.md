@@ -615,20 +615,16 @@ spec:
 ```
 
 ## 무정지 재배포
-```
-배포전
-```
+
+* 배포전
 ![image](https://user-images.githubusercontent.com/5147735/109743733-89526280-7c14-11eb-93da-0ddd3cd18e22.png)
 
-```
-배포중
-```
+* 배포중
+
 ![image](https://user-images.githubusercontent.com/5147735/109744076-11386c80-7c15-11eb-849d-6cf4e2c72675.png)
 ![image](https://user-images.githubusercontent.com/5147735/109744186-3a58fd00-7c15-11eb-8da3-f11b6194fc6b.png)
 
-```
-배포후
-```
+* 배포후
 ![image](https://user-images.githubusercontent.com/5147735/109744225-45139200-7c15-11eb-8efa-07ac40162ded.png)
 
 
