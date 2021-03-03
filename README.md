@@ -430,11 +430,15 @@ env:
        configMapKeyRef:
          name: systemmode
          key: sysmode
-         
+```
+
+```
 kubectl create configmap systemmode --from-literal=sysmode=PRODUCT
 kubectl get configmap systemmode -o yaml
+```
 
-order 1건 추가후 로그 확인
+* order 1건 추가후 로그 확인
+```
 kubectl logs {pod ID}
 ```
 ![image](https://user-images.githubusercontent.com/5147735/109642889-dbed3980-7b96-11eb-99c9-af9d8b38cd22.png)
