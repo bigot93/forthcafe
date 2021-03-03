@@ -416,6 +416,7 @@ kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-consumer --bootst
 ```
 git clone https://github.com/bigot93/forthcafe.git
 ```
+## Deploy / Pipeline
 
 * build 하기
 ```
@@ -507,6 +508,69 @@ kubectl expose deploy mypage --type=ClusterIP --port=8080
 kubectl logs {pod명}
 ```
 ![image](https://user-images.githubusercontent.com/5147735/109618535-fe715980-7b7a-11eb-8adc-dcb07c9a46c3.png)
+
+
+* deployment.yml  참고
+```
+1. image 설정
+2. env 설정 (config Map) 
+3. readiness 설정 (무정지 배포)
+4. liveness 설정 (self-healing)
+5. resource 설정 (autoscaling)
+```
+
+![image](https://user-images.githubusercontent.com/5147735/109643506-a8f77580-7b97-11eb-926b-e6c922aa2d1b.png)
+
+
+
+## 오토스케일 아웃
+* 앞서 서킷 브레이커(CB) 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
+
+* order 서비스 deployment.yml 설정
+```
+ resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
+```
+* 다시 expose 해준다.
+
+```
+kubectl expose deploy order --type=ClusterIP --port=8080
+```
+
+* Delivery서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다
+
+```
+kubectl autoscale deploy order --min=1 --max=10 --cpu-percent=15
+```
+
+* siege를 활용해서 워크로드를 1000명, 1분간 걸어준다. (Cloud 내 siege pod에서 부하줄 것)
+```
+kubectl exec -it pod/siege -c siege -- /bin/bash
+siege -c1000 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
+
+```
+
+* 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다
+```
+kubectl get deploy delivery -w
+```
+![image](https://user-images.githubusercontent.com/5147735/109740239-5311e480-7c0e-11eb-8f30-8372977ccbb9.png)
+
+
+* siege.yaml
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: siege
+spec:
+  containers:
+  - name: siege
+    image: apexacme/siege-nginx
+```
 
 
 
