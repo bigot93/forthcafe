@@ -371,7 +371,7 @@ Fallback 설정
 ![image](https://user-images.githubusercontent.com/5147735/109755797-04724380-7c2a-11eb-8fcd-1c5135000ee5.png)
 
 
-Fallback 결과
+Fallback 결과(Pay service 종료 후 Order 추가 시)
 ![image](https://user-images.githubusercontent.com/5147735/109755716-dab91c80-7c29-11eb-9099-ba585115a2a6.png)
 
 # 운영
