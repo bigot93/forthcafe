@@ -603,8 +603,8 @@ kubectl get configmap apiurl -o yaml
 
 
 ## Self-healing (Liveness Probe)
-* deployment.yml   livenessProbe  port 8089로 변경 후 배포 하여 확인 
-
+* order 서비스 deployment.yml   livenessProbe 설정을 port 8089로 변경 후 배포 하여 liveness probe 가 동작함을 확인 
+* 
 ```
     livenessProbe:
       httpGet:
