@@ -17,8 +17,10 @@ siege -c2 -t10S  -v --content-type "application/json" 'http://localhost:8081/ord
 
 //////// github
 project root에서 수행
-git init
-git add .
+git init                   ////// 로컬 초기화 git clone 시에는 필요없음
+git clone GITHUB주소       ////// 해당 주소에서 소스 내려 받음
+git pull                   ////// github -> local 소스 업데이트
+git add . 
 git commit -m "first commit"
 git remote add origin https://github.com/bigot93/forthcafe.git
 git branch -M main //// 브랜치 변경
@@ -26,6 +28,7 @@ git push -u origin main
 bigot93/!~~~~~~~0 (github id / github pw)
 git push origin +main  //// 위에걸로 오류나면 강제 커밋(!!!!!!!!!!!!!!사용 주의)
 rm -rf .git   /// git 삭제
+
 
 
 ////////////// kafka
