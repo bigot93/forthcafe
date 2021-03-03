@@ -85,7 +85,7 @@ spring:
 # pay service 호출 주소
 api:
   url:
-    pay: http://localhost:8082
+    pay: http://Pay:8080
 
 # circuit breaker 설정 start
 feign:
@@ -96,6 +96,7 @@ hystrix:
   command:
     # 전역설정
     default:
-      #execution.isolation.thread.timeoutInMilliseconds: 610
-      execution.isolation.thread.timeoutInMilliseconds: 30000
+      execution.isolation.thread.timeoutInMilliseconds: 610
+      # execution.isolation.thread.timeoutInMilliseconds: 250
+      #execution.isolation.thread.timeoutInMilliseconds: 30000
 # circuit breaker 설정 end

@@ -32,11 +32,11 @@ public class Pay {
         payed.publishAfterCommit();
 
         // delay test시 주석해제
-        // try {
-        //         Thread.currentThread().sleep((long) (400 + Math.random() * 220));
-        // } catch (InterruptedException e) {
-        //         e.printStackTrace();
-        // }
+        try {
+                Thread.currentThread().sleep((long) (400 + Math.random() * 220));
+        } catch (InterruptedException e) {
+                e.printStackTrace();
+        }
 
         // 임시주석처리
         // PayCancelled payCancelled = new PayCancelled();

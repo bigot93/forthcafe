@@ -16,9 +16,16 @@ spec:
     spec:
       containers:
         - name: order
-          image: skteam01.azurecr.io/order:v1
+          image: skteam01.azurecr.io/order:v11
           ports:
             - containerPort: 8080
+          # autoscale start
+          resources:
+              limits:
+                cpu: 500m
+              requests:
+                cpu: 200m
+          # autoscale end
           ### config map start
           env:
             - name: SYS_MODE

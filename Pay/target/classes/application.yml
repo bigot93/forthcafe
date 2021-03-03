@@ -67,3 +67,7 @@ spring:
         event-out:
           destination: forthcafe
           contentType: application/json
+# delivery service 호출 주소
+api:
+  url:
+    delivery: http://Delivery:8080  
