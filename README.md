@@ -475,6 +475,12 @@ cd MyPage
 az acr build --registry skteam01 --image skteam01.azurecr.io/mypage:v1 .
 kubectl apply -f kubernetes/deployment.yml 
 kubectl expose deploy mypage --type=ClusterIP --port=8080
+
+cd .. 
+cd gateway
+az acr build --registry skteam01 --image skteam01.azurecr.io/gateway:v1 .
+kubectl create deploy gateway --image=skteam01.azurecr.io/gateway:v1
+kubectl expose deploy gateway --type=LoadBalancer --port=8080
 ```
 
 
@@ -528,7 +534,7 @@ kubectl logs {pod명}
 
 ![image](https://user-images.githubusercontent.com/5147735/109643506-a8f77580-7b97-11eb-926b-e6c922aa2d1b.png)
 
-## 동기식 호출 / 서킷 브레이킹 / 장애격리
+## 서킷 브레이킹
 * 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
 * Order -> Pay 와의 Req/Res 연결에서 요청이 과도한 경우 CirCuit Breaker 통한 격리
 * Hystrix 를 설정: 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
@@ -543,7 +549,7 @@ feign:
 hystrix:
   command:
     default:
-      #execution.isolation.thread.timeoutInMilliseconds: 610
+      execution.isolation.thread.timeoutInMilliseconds: 610
 ```
 
 
@@ -567,7 +573,8 @@ hystrix:
 * 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 100명 60초 동안 실시
 ```
 kubectl exec -it pod/siege -c siege -- /bin/bash
-siege -c100 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
+siege -c1000 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
+siege -c1000 -t30S  -v --content-type "application/json" 'http://52.141.61.164:8080/orders POST {"memuId":2, "quantity":1}'
 ```
 
 
@@ -637,13 +644,24 @@ spec:
 
 
 ## ConfigMap
-* application.yml 파일에 ${configurl} 설정
+* deployment.yml 파일에 설정
 
 ```
-kubectl create configmap apiurl --from-literal=sysmode=PRODUCT
-kubectl get configmap apiurl -o yaml
+env:
+   - name: SYS_MODE
+     valueFrom:
+       configMapKeyRef:
+         name: systemmode
+         key: sysmode
+         
+kubectl create configmap systemmode --from-literal=sysmode=PRODUCT
+kubectl get configmap systemmode -o yaml
+
+order 1건 추가후 로그 확인
+kubectl logs {pod ID}
 ```
 ![image](https://user-images.githubusercontent.com/5147735/109642889-dbed3980-7b96-11eb-99c9-af9d8b38cd22.png)
+![image](https://user-images.githubusercontent.com/5147735/109760887-dc3b1280-7c32-11eb-8284-f4544d7b72b0.png)
 
 
 
