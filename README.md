@@ -574,8 +574,11 @@ hystrix:
 ```
 kubectl exec -it pod/siege -c siege -- /bin/bash
 siege -c1000 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
-siege -c1000 -t30S  -v --content-type "application/json" 'http://52.141.61.164:8080/orders POST {"memuId":2, "quantity":1}'
+siege -c100 -t30S  -v --content-type "application/json" 'http://52.141.61.164:8080/orders POST {"memuId":2, "quantity":1}'
 ```
+![image](https://user-images.githubusercontent.com/5147735/109762408-dd207400-7c33-11eb-8464-325d781867ae.png)
+![image](https://user-images.githubusercontent.com/5147735/109762353-c7ab4a00-7c33-11eb-99d5-6ccdcfcef1de.png)
+![image](https://user-images.githubusercontent.com/5147735/109762376-d1cd4880-7c33-11eb-87fb-b739aa2d6621.png)
 
 
 
