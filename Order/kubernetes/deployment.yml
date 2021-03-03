@@ -27,12 +27,12 @@ spec:
                 cpu: 200m
           # autoscale end
           ### config map start
-          env:
-            - name: SYS_MODE
-              valueFrom:
-                configMapKeyRef:
-                  name: systemmode
-                  key: sysmode
+          #env:
+          #  - name: SYS_MODE
+          #    valueFrom:
+          #      configMapKeyRef:
+          #        name: systemmode
+          #        key: sysmode
           ### config map end                        
           readinessProbe:
             httpGet:
