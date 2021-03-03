@@ -593,14 +593,29 @@ hystrix:
          }
 ```
 
+* /home/project/team/forthcafe/yaml/siege.yaml
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: siege
+spec:
+  containers:
+  - name: siege
+    image: apexacme/siege-nginx
+```
+
+```
+- /home/project/team/forthcafe/yaml/kubectl apply -f siege.yaml
+```
+
 * 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 100명 60초 동안 실시
 ```
 kubectl exec -it pod/siege -c siege -- /bin/bash
-siege -c1000 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
+siege -c100 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
 siege -c100 -t30S  -v --content-type "application/json" 'http://52.141.61.164:8080/orders POST {"memuId":2, "quantity":1}'
 ```
 ![image](https://user-images.githubusercontent.com/5147735/109762408-dd207400-7c33-11eb-8464-325d781867ae.png)
-![image](https://user-images.githubusercontent.com/5147735/109762353-c7ab4a00-7c33-11eb-99d5-6ccdcfcef1de.png)
 ![image](https://user-images.githubusercontent.com/5147735/109762376-d1cd4880-7c33-11eb-87fb-b739aa2d6621.png)
 
 
@@ -616,33 +631,21 @@ siege -c100 -t30S  -v --content-type "application/json" 'http://52.141.61.164:80
             requests:
               cpu: 200m
 ```
-* 다시 expose 해준다.
-
+* 다시 배포해준다.
 ```
+/home/project/team/forthcafe/Order/mvn package
+az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
+kubectl apply -f kubernetes/deployment.yml 
 kubectl expose deploy order --type=ClusterIP --port=8080
 ```
 
-* Delivery서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다
+* Order 서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다
 
 ```
 kubectl autoscale deploy order --min=1 --max=10 --cpu-percent=15
 ```
 
-* siege를 활용해서 워크로드를 1000명, 1분간 걸어준다. (Cloud 내 siege pod에서 부하줄 것)
-```
-kubectl exec -it pod/siege -c siege -- /bin/bash
-siege -c1000 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
-
-```
-
-* 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다
-```
-kubectl get deploy delivery -w
-```
-![image](https://user-images.githubusercontent.com/5147735/109740239-5311e480-7c0e-11eb-8f30-8372977ccbb9.png)
-
-
-* siege.yaml
+* /home/project/team/forthcafe/yaml/siege.yaml
 ```
 apiVersion: v1
 kind: Pod
@@ -654,13 +657,30 @@ spec:
     image: apexacme/siege-nginx
 ```
 
-## 무정지 재배포
+```
+- /home/project/team/forthcafe/yaml/kubectl apply -f siege.yaml
+```
 
+* siege를 활용해서 워크로드를 1000명, 1분간 걸어준다. (Cloud 내 siege pod에서 부하줄 것)
+```
+kubectl exec -it pod/siege -c siege -- /bin/bash
+siege -c1000 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
+```
+
+* 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다
+```
+kubectl get deploy order -w
+```
+![image](https://user-images.githubusercontent.com/5147735/109740239-5311e480-7c0e-11eb-8f30-8372977ccbb9.png)
+
+
+
+
+## 무정지 재배포
 * 배포전
 ![image](https://user-images.githubusercontent.com/5147735/109743733-89526280-7c14-11eb-93da-0ddd3cd18e22.png)
 
 * 배포중
-
 ![image](https://user-images.githubusercontent.com/5147735/109744076-11386c80-7c15-11eb-849d-6cf4e2c72675.png)
 ![image](https://user-images.githubusercontent.com/5147735/109744186-3a58fd00-7c15-11eb-8da3-f11b6194fc6b.png)
 
