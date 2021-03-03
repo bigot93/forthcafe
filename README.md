@@ -542,7 +542,8 @@ kubectl expose deploy mypage --type=ClusterIP --port=8080
 
 kubectl logs {pod명}
 ```
-![image](https://user-images.githubusercontent.com/5147735/109618535-fe715980-7b7a-11eb-8adc-dcb07c9a46c3.png)
+* Service, Pod, Deploy 상태 확인
+![image](https://user-images.githubusercontent.com/5147735/109769165-2de89a80-7c3d-11eb-8472-2281468fb771.png)
 
 
 * deployment.yml  참고
