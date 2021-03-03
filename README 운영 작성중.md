@@ -191,16 +191,14 @@ hystrix:
          }
 ```
 
-* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 100명 60초 동안 실시
+* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 1000명 60초 동안 실시
 ```
 kubectl exec -it pod/siege -c siege -- /bin/bash
-siege -c100 -t60S  -v --content-type "application/json" 'http://localhost:8081/orders POST {"memuId":2, "quantity":1}'
+siege -c1000 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
 ```
 
 
 ## [동작 확인 화면 첨부]
-
-
 
 
 
@@ -228,10 +226,10 @@ kubectl expose deploy order --type=ClusterIP --port=8080
 kubectl autoscale deploy delivery --min=1 --max=10 --cpu-percent=15
 ```
 
-* siege를 활용해서 워크로드를 2분간 걸어준다. (Cloud 내 siege pod에서 부하줄 것)
+* siege를 활용해서 워크로드를 1000명, 1분간 걸어준다. (Cloud 내 siege pod에서 부하줄 것)
 ```
-kubectl exec -it pod/siege -c siege -n forthcafe -- /bin/bash
-siege -c100 -t60S  -v --content-type "application/json" 'http://localhost:8081/orders POST {"memuId":2, "quantity":1}'
+kubectl exec -it pod/siege -c siege -- /bin/bash
+siege -c1000 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
 
 ```
 
@@ -239,6 +237,9 @@ siege -c100 -t60S  -v --content-type "application/json" 'http://localhost:8081/o
 ```
 kubectl get deploy delivery -w
 ```
+![image](https://user-images.githubusercontent.com/5147735/109740239-5311e480-7c0e-11eb-8f30-8372977ccbb9.png)
+
+
 
 
 
