@@ -605,8 +605,9 @@ spec:
     image: apexacme/siege-nginx
 ```
 
+* siege pod 생성
 ```
-- /home/project/team/forthcafe/yaml/kubectl apply -f siege.yaml
+/home/project/team/forthcafe/yaml/kubectl apply -f siege.yaml
 ```
 
 * 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 100명 60초 동안 실시
@@ -657,37 +658,40 @@ spec:
     image: apexacme/siege-nginx
 ```
 
+* siege pod 생성
 ```
-- /home/project/team/forthcafe/yaml/kubectl apply -f siege.yaml
+/home/project/team/forthcafe/yaml/kubectl apply -f siege.yaml
 ```
 
 * siege를 활용해서 워크로드를 1000명, 1분간 걸어준다. (Cloud 내 siege pod에서 부하줄 것)
 ```
 kubectl exec -it pod/siege -c siege -- /bin/bash
 siege -c1000 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
+siege -c1000 -t60S  -v --content-type "application/json" 'http://52.141.61.164:8080/orders POST {"memuId":2, "quantity":1}'
 ```
 
 * 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다
 ```
-kubectl get deploy order -w
+kubectl get pod order -w
 ```
-![image](https://user-images.githubusercontent.com/5147735/109740239-5311e480-7c0e-11eb-8f30-8372977ccbb9.png)
+![image](https://user-images.githubusercontent.com/5147735/109771259-f3ccc800-7c3f-11eb-8ebe-9ff4ab9c2242.png)
 
 
 
 
-## 무정지 재배포
+## 무정지 재배포 (Readiness Probe)
 * 배포전
+
 ![image](https://user-images.githubusercontent.com/5147735/109743733-89526280-7c14-11eb-93da-0ddd3cd18e22.png)
 
 * 배포중
+
 ![image](https://user-images.githubusercontent.com/5147735/109744076-11386c80-7c15-11eb-849d-6cf4e2c72675.png)
 ![image](https://user-images.githubusercontent.com/5147735/109744186-3a58fd00-7c15-11eb-8da3-f11b6194fc6b.png)
 
 * 배포후
+
 ![image](https://user-images.githubusercontent.com/5147735/109744225-45139200-7c15-11eb-8efa-07ac40162ded.png)
-
-
 
 
 
