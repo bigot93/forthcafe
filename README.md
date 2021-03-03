@@ -365,3 +365,149 @@ Delivery 서비스 재기동 후 주문취소
 
 Pay 서비스 상태를 보면 2번 주문 정상 취소 처리됨
 ![증빙9](https://github.com/bigot93/forthcafe/blob/main/images/%EB%8F%99%EA%B8%B0%ED%99%944.png)
+
+
+# 운영
+
+## CI/CD
+
+
+* 헬름 설치
+```
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+```
+* Azure Only
+```
+kubectl patch storageclass managed -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+```
+
+* 카프카 설치
+```
+kubectl --namespace kube-system create sa tiller      # helm 의 설치관리자를 위한 시스템 사용자 생성
+kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+
+helm repo add incubator https://charts.helm.sh/incubator
+helm repo update
+kubectl create ns kafka
+helm install my-kafka --namespace kafka incubator/kafka
+
+kubectl get po -n kafka -o wide
+```
+* Topic 생성
+```
+kubectl -n kafka exec my-kafka-0 -- /usr/bin/kafka-topics --zookeeper my-kafka-zookeeper:2181 --topic forthcafe --create --partitions 1 --replication-factor 1
+```
+* Topic 확인
+```
+kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-producer --broker-list my-kafka:9092 --topic forthcafe
+```
+* 이벤트 발행하기
+```
+kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-producer --broker-list my-kafka:9092 --topic forthcafe
+```
+* 이벤트 수신하기
+```
+kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-consumer --bootstrap-server my-kafka:9092 --topic forthcafe --from-beginning
+```
+
+* 소스 가져오기
+```
+git clone https://github.com/bigot93/forthcafe.git
+```
+
+* build 하기
+```
+cd /forthcafe
+
+cd Order
+mvn package 
+
+cd ..
+cd Pay
+mvn package
+
+cd ..
+cd Delivery
+mvn package
+
+cd ..
+cd gateway
+mvn package
+
+cd ..
+cd MyPage
+mvn package
+```
+
+* Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성(방법1 : yml파일 이용한 deploy)
+```
+cd .. 
+cd Order
+az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
+kubectl apply -f kubernetes/deployment.yml 
+kubectl expose deploy order --type=ClusterIP --port=8080
+
+cd .. 
+cd Pay
+az acr build --registry skteam01 --image skteam01.azurecr.io/pay:v1 .
+kubectl apply -f kubernetes/deployment.yml 
+kubectl expose deploy pay --type=ClusterIP --port=8080
+
+cd .. 
+cd Delivery
+az acr build --registry skteam01 --image skteam01.azurecr.io/delivery:v1 .
+kubectl apply -f kubernetes/deployment.yml 
+kubectl expose deploy delivery --type=ClusterIP --port=8080
+
+
+cd .. 
+cd MyPage
+az acr build --registry skteam01 --image skteam01.azurecr.io/mypage:v1 .
+kubectl apply -f kubernetes/deployment.yml 
+kubectl expose deploy mypage --type=ClusterIP --port=8080
+```
+
+
+* Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성(방법2)
+```
+cd ..
+cd Order
+az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
+kubectl create deploy order --image=skteam01.azurecr.io/order:v1
+kubectl expose deploy order --type=ClusterIP --port=8080
+
+cd .. 
+cd Pay
+az acr build --registry skteam01 --image skteam01.azurecr.io/pay:v1 .
+kubectl create deploy pay --image=skteam01.azurecr.io/pay:v1
+kubectl expose deploy pay --type=ClusterIP --port=8080
+
+
+cd .. 
+cd Delivery
+az acr build --registry skteam01 --image skteam01.azurecr.io/delivery:v1 .
+kubectl create deploy delivery --image=skteam01.azurecr.io/delivery:v1
+kubectl expose deploy delivery --type=ClusterIP --port=8080
+
+
+cd .. 
+cd gateway
+az acr build --registry skteam01 --image skteam01.azurecr.io/gateway:v1 .
+kubectl create deploy gateway --image=skteam01.azurecr.io/gateway:v1
+kubectl expose deploy gateway --type=LoadBalancer --port=8080
+
+cd .. 
+cd MyPage
+az acr build --registry skteam01 --image skteam01.azurecr.io/mypage:v1 .
+kubectl create deploy mypage --image=skteam01.azurecr.io/mypage:v1
+kubectl expose deploy mypage --type=ClusterIP --port=8080
+
+kubectl logs {pod명}
+```
+![image](https://user-images.githubusercontent.com/5147735/109618535-fe715980-7b7a-11eb-8adc-dcb07c9a46c3.png)
+
+
+
+
