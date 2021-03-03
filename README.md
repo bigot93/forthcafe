@@ -377,21 +377,18 @@ Fallback 결과
 # 운영
 
 ## CI/CD
-
-http://msaschool.io/operation/implementation/implementation-seven/
-* 헬름 설치
+* 카프카 설치
 ```
+- 헬름 설치
+참고 : http://msaschool.io/operation/implementation/implementation-seven/
 curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
 chmod 700 get_helm.sh
 ./get_helm.sh
-```
-* Azure Only
-```
-kubectl patch storageclass managed -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-```
 
-* 카프카 설치
-```
+- Azure Only
+kubectl patch storageclass managed -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+- 카프카 설치
 kubectl --namespace kube-system create sa tiller      # helm 의 설치관리자를 위한 시스템 사용자 생성
 kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
 
@@ -423,6 +420,27 @@ kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-consumer --bootst
 ```
 git clone https://github.com/bigot93/forthcafe.git
 ```
+
+## ConfigMap
+* deployment.yml 파일에 설정
+```
+env:
+   - name: SYS_MODE
+     valueFrom:
+       configMapKeyRef:
+         name: systemmode
+         key: sysmode
+         
+kubectl create configmap systemmode --from-literal=sysmode=PRODUCT
+kubectl get configmap systemmode -o yaml
+
+order 1건 추가후 로그 확인
+kubectl logs {pod ID}
+```
+![image](https://user-images.githubusercontent.com/5147735/109642889-dbed3980-7b96-11eb-99c9-af9d8b38cd22.png)
+![image](https://user-images.githubusercontent.com/5147735/109760887-dc3b1280-7c32-11eb-8284-f4544d7b72b0.png)
+
+
 ## Deploy / Pipeline
 
 * build 하기
@@ -646,25 +664,6 @@ spec:
 
 
 
-## ConfigMap
-* deployment.yml 파일에 설정
-
-```
-env:
-   - name: SYS_MODE
-     valueFrom:
-       configMapKeyRef:
-         name: systemmode
-         key: sysmode
-         
-kubectl create configmap systemmode --from-literal=sysmode=PRODUCT
-kubectl get configmap systemmode -o yaml
-
-order 1건 추가후 로그 확인
-kubectl logs {pod ID}
-```
-![image](https://user-images.githubusercontent.com/5147735/109642889-dbed3980-7b96-11eb-99c9-af9d8b38cd22.png)
-![image](https://user-images.githubusercontent.com/5147735/109760887-dc3b1280-7c32-11eb-8284-f4544d7b72b0.png)
 
 
 
