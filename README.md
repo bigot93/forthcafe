@@ -431,17 +431,17 @@ env:
          name: systemmode
          key: sysmode
 ```
-
+* Configmap 생성, 정보 확인
 ```
 kubectl create configmap systemmode --from-literal=sysmode=PRODUCT
 kubectl get configmap systemmode -o yaml
 ```
+![image](https://user-images.githubusercontent.com/5147735/109768817-bb77ba80-7c3c-11eb-8856-7fca5213f5b1.png)
 
 * order 1건 추가후 로그 확인
 ```
 kubectl logs {pod ID}
 ```
-![image](https://user-images.githubusercontent.com/5147735/109642889-dbed3980-7b96-11eb-99c9-af9d8b38cd22.png)
 ![image](https://user-images.githubusercontent.com/5147735/109760887-dc3b1280-7c32-11eb-8284-f4544d7b72b0.png)
 
 
