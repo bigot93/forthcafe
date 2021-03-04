@@ -2,6 +2,7 @@ CI/CD 클라우드 환경 설정하기
 
 CI/CD교재 31 page ~ 참고 
 [azure portal 설정]  
+http://portal.azure.com/
 #skcc24는 본인 계정으로 변경 하기  
 팀 계정 : skteam01로 변경 
 
